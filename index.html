@@ -1,19 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Title</title>
+<title>CSS Organization &amp; Architecture</title>
 <meta charset="utf-8">
 <style>
-@import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
-@import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
-@import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+  @import url('https://fonts.googleapis.com/css?family=Exo:400,400i,800%7CVollkorn:400,700%7CFira+Mono');
 
-body { font-family: 'Droid Serif'; }
-h1, h2, h3 {
-font-family: 'Yanone Kaffeesatz';
-font-weight: normal;
-}
-.remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+  body { 
+    font-family: Helvetica, sans-serif; 
+    color: #fff;
+    line-height: 1.4;
+  }
+
+  .remark-slide-content {
+    background-color: #2d2d2d;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Georgia', serif;
+    font-weight: normal;
+    color: #6cbdba;
+  }
+
+  .remark-code, 
+  .remark-inline-code { 
+    font-family: 'Fira Mono', monospace; 
+  }
+
+  .hljs-default .hljs {
+    background-color: #111;
+      color: #fff;
+  }
+
+  .hljs-default .hljs-string,
+  .hljs-default .hljs-selector-class,
+  .hljs-default .hljs-selector-id {
+    color: #e5be46;
+  }
+
 </style>
 </head>
 <body>
@@ -267,8 +291,9 @@ class: middle
 
 # Objects
 
-This is where we get to OOCSS. We start defining classes here.
-Objects should be non-cosmetic styling. Things like grids, or wrappers, cards, media.
+Start declaring classes here.
+Non-cosmetic styles.
+Grids, Wrappers, Cards, Media...
 
 ```sh
 _objects.grid.scss
@@ -278,12 +303,15 @@ _object.media.scss
 
 ---
 
+class: middle
+
 # Components
 
-This is where you start putting the UI together. Once the project is setup, you'll spend most of the time in these files. 
 Now our classing will get more specific. You shouldn't have any declarations without at least specificty level of 1 class. 
 
-```
+Once the project is setup, most of your time will be in component files.
+
+```sh
 _components.site-nav.scss
 _components.buttons.scss
 _components.carouself.scss
@@ -293,9 +321,13 @@ _components.carouself.scss
 
 # Trumps
 
-You don't want to ever have to be in these files. The declarations in Trumps beat everything else for specificity. If you're using an `!important` it better be in here. I'll throw ID selectors and classes in here if necessary.
+Avoid at all costs.
 
-```
+Trumps have absolute specificity.
+!important should only ever appear here. _Try to avoid them_
+ID selectors belong here. 
+
+```sh
 _trumps.clearfix.scss
 _trumps.utilities.scss // just for Gray ;)
 _trumps.ie8.scss
@@ -303,85 +335,87 @@ _trumps.ie8.scss
 
 ---
 
-Takeaways
----------
+class: middle
 
-Start small. You don't need the kitchen sink.
-A little bit of thinking goes a long way. Think about what your trying to style.
-No one true approach 
-Mix'n match
+# Things to remember
 
-CSS
+- Start small - you don't need the kitchen sink if you don't have a kitchen.
+- Think about the box-model, don't start overriding things without asking why.
+- Group things together
+- Break out declarations into their own files as early as necessary. Even if overkill.
+- No one true way to do this.
+- Mix'n match what you like
+- Use semantic names for your classes.
+
 ---
 
-classes good / ids bad / attributes neutral?
-- performance tests required
+class: middle
 
-CSS organization is subjective. Do what you want. But think first.
+# Other CSS Things
 
-Mix with care - you can mix and match your methodologies - I like the idea of SMACSS prefixes. I like BEM. BEMACSS!
+- Classes > Attributes > IDs > Tags
+- SCSS files should be prefixed with underscore
+- when importing, you can skip the prefix and the extension
+- You probably don't need those helper classes.
 
-# File/folder structure
-- assets/stylesheets/
-- split up at logical groupings.
-- my common files
-- - variables
-- - typography
-- - mixins
-- - layout/structure
-- - components = block
-- - - site-header
-- - - site-footer
-- - - colophon
-- - - hero-unit
-- - - etc
+---
 
-# Imports
-- we have them, please use them.
-- @import "file_name"; // scss no prefix _ no extension
+class: middle
 
-# Splitting files up
-- File getting large? Move associated blocks/elements out to a new file, and import it.
+# Things I've Learned At Stembolt
 
-# Helpers/Utilities
-- greenfield project? Not at the start. Start building, once you see common patterns, refactor.
-- Existing project? Look for existing patterns. Refactor.
+---
 
-# Normalisation 
-*, *:before, *:after {
-/* Zero all the things! */
-}
+class: middle
 
-# Naming
-Sucks. Good luck.
-Following BEM
-Break down elements into their smallest pieces - like atomic.
+## How to frustrate Clarke
 
-Palmar (palm side) (anterior) 
-Dorsal (back side)
+- use Gnome
+- nmap <C-d> to :bd!
 
+---
+
+class: middle
+
+## How to annoy Gray
+
+- Helper classes
+- Extraneous properties
+- Magic numbers!
+  - calc(50% - #{$gutter-vertical + $gutter-underline-spacing + 10px})
+- %extends
+- Data-uri 
+```css
+background-image: url("data:image/svg+xml,
+  %3Csvg xmlns='http://www.w3.org/2000/svg' 
+    fill='#ffffff' width='100' height='100' %3E
+    %3Cpath d='M99 50L1 99V1z'/%3E
+  %3C/svg%3E
+");
 ```
-.hand // block
-.hand--right // modifier
-.hand__finger .finger // block in a block
-.finger // block
-.finger__nail .nail // block in a block
-.nail // block
-.nail__cuticle // element
-.nail__crest // element
+- blank lines
+- override properties because you can
+- *, *::before, *::after { box-sizing: border-box; }
 
-.finger .distal-phalanges
-.finger .intermediate-phalanges
-.finger .proximal-phalanges
-```
+---
 
-```
-.hand .hand--right
-.hand__finger .finger .finger--index
-.finger__nail .nail
-.nail__cuticle
-.nail__crest
-```
+class: middle
+
+# Refrences
+
+- Nicole Sullivan @stubbornella
+- Jonathan Snook @snookca
+- Harry Roberts @csswizardry
+- Yandex @yandexcom
+- Brad Frost @brad_frost
+- Chris Coyer @chriscoyer / @real_css_tricks / @codepen
+- Gray Gilmore @graygilmore
+
+</textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script> var slideshow = remark.create(); </script>
+</body>
+</html>
 
 ## Naming Continued
 $color-red - implies color red. Will always be red-ish
@@ -394,57 +428,5 @@ $color-gray - gray covers the gradient from black to white
 $color-gray--darkest - could be black, could be #222 you don't need to care about the value, just that it's the darkest shade on the page
 $color-gray--light - lighter than the median gray
 $color-gray--lightest - opposite of darkest
-
-#Things I've Learned At Stembolt
-
-## How to frustrate Clarke
-
-- use Gnome
-- nmap <C-d> to :bd!
-
-## How to annoy Gray
-
-- helper classes
-- utilities
-- extraneous properties
-- magic numbers!
-- calc(50% - #{$gutter-vertical + $gutter-underline-spacing + 10px})
-- %extends
-- data-uri background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='#ffffff' width='100' height='100' %3E%3Cpath d='M99 50L1 99V1z'/%3E%3C/svg%3E");
-- blank lines
-- override useless properties
-- *, *::before, *::after { box-sizing: border-box; }
-
-
-
-# Refrences
-Nicole Sullivan
-Jonathan Snook
-CSS Wizardry
-Yandex
-Brad Frost
-Chris Coyer / CSS Tricks
-
-
-</textarea>
-<script src="https://remarkjs.com/downloads/remark-latest.min.js">
-</script>
-<script>
-var slideshow = remark.create();
-</script>
-</body>
-</html>
-
----
-
-# 2016 - Atomic Design
-
-Brad Frost @brad_frost
-
-- classes for everything
-- Atoms, Molecules, Organisms, Templates, Pages
-- Atom: HTML Tag
-- Molecule: Collection of Atoms - eg: Search Form
-- Organism: Grouping of Molecules - eg: Site header (with Search form ;) )
 
 
