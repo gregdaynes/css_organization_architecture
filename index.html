@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Title</title>
+<meta charset="utf-8">
+<style>
+@import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+@import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+@import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+body { font-family: 'Droid Serif'; }
+h1, h2, h3 {
+font-family: 'Yanone Kaffeesatz';
+font-weight: normal;
+}
+.remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+</style>
+</head>
+<body>
+<textarea id="source">
+
+class: center, middle
+
+# CSS Organization & Architecture
+
+---
+
+class: center, middle
+
+# Brief History of Methodologies
+
+---
+
+class: middle
+
+# 2009 - OOCSS
+## Object Oriented CSS
+
+Nicole Sulivan - @stubbornella - Yahoo
+
+- Separate Structure & Skin
+- Separate Container & Content
+- Foundation of newer methods
+
+---
+
+class: middle
+
+# 2011 - SMACSS
+## Scalable Modular Architecture for CSS
+
+Jonathan Snook - @snookca - Yahoo
+
+- Further Categorization... Base Layout Module State Theme
+- id selectors for important elements
+- classes for theme, state, layout
+- prefixed classes with l- m- is-
+
+---
+
+class: middle
+
+# 2013 - BEM
+## Block Element Modifier 
+
+Yandex
+
+- start of component based methodologies
+- classes for everything
+- Focus on elements, then how those elements behave inside a block
+- modifier classes for altering appearance/behavior
+
+---
+
+class: middle
+
+# 2016 - ITCSS
+## Inverted Triangle CSS
+
+Harry Robers @csswizardry
+
+- start with very generic styles
+- refine as specificity increases
+- trumping - absolute specificity
+
+---
+
+class: center, middle
+
+#### Combining OOCSS/SMACSS/BEM/ITCSS...
+# SMOOBEMIT...
+
+---
+
+class: middle
+
+# Architecture
+
+---
+
+class: middle
+
+# Start With The Foundation
+
+- Style base first - eg. Globals, Colors, Typography, etc.
+- Add resets as needed 
+
+_PLEASE_
+- Don't nuke everything with Eric Meyers Reset
+- If you don't know what to reset... Pick and choose what you need from normalize.css
+
+---
+
+class: middle
+
+# Adding A Room
+
+- Start defining block classes (containers)
+- Semantic naming: name what it is, not how it looks.
+- lisp-case, spinal-case, kebab-case... whatever hypenated words is called.
+
+```scss
+.site-search {} /* block */
+```
+
+---
+
+class: middle
+
+# Put Things In The Room
+
+- Define element classes as they behave inside the block
+- name should suffix parent block class with `__thing`
+- consider their behavior inside a different block
+- how about when that block is in another block?
+
+
+```scss
+.site-search {} /* block */
+.site-search__field {} /* element */
+.site-search__button {} /* element */
+```
+
+---
+
+class: middle
+
+# Painting The Room
+
+- Add modifying classes. eg: full, rtl, primary
+- two hyphen suffix `--primary`
+
+```scss
+.site-search {} /* block */
+.site-search__field {} /* element */
+.site-search__button {} /* element */
+
+.site-search--rtl {} /* block */
+```
+
+---
+
+class: middle
+
+# Finished Room
+
+```html
+<form class="site-search site-search--rtl">
+  <label class="site-search__label">Site Search</label>
+  <input class="site-search__field">
+  <button id="fancy" class="site-search__button button--primary">Search</button>
+</form>
+```
+
+```scss
+label {}
+input {}
+button {}
+
+.site-search {}
+.site-search__label {}
+.site-search__field {}
+.site-search__button {}
+
+.site-search--rtl {}
+.button--primary {}
+
+#fancy { font-family: 'Comic Sans' } /* trump */
+```
+
+---
+
+class: center, middle
+
+# Organization
+
+---
+
+class: center, middle
+
+![](https://i.imgflip.com/1llusv.jpg)
+
+---
+
+class: middle
+
+# Settings
+
+A place for your global things: variables; colors; environment settings;
+
+Keep like-settings together, Typography, colors, margin/padding etc.
+
+```sh
+_settings.global.scss
+_settings.typography.scss
+_settings.colors.scss
+_settings.box-sizing.scss
+```
+
+---
+
+class: middle
+
+# Tools
+
+Mixins, extends, functions. 
+
+```sh
+_tools.functions.scss
+_tools.mixins.grid.scss
+_tools.mixins.colors.scss
+_tools.extends.typography.scss
+```
+
+---
+
+class: middle
+
+# Generic
+
+Box-sizing, resets (don't use resets), selections...
+
+```sh
+_generic.box-sizing.scss
+_generic.normalize.scss
+_generic.selection.scss
+```
+
+---
+
+class: middle
+
+# Element
+
+HTML Elements, __Not__ Classes.
+img, button, input... 
+Keep grouped by type
+
+```sh
+_elements.headings.scss
+_elements.links.scss
+```
+
+---
+
+class: middle
+
+# Objects
+
+This is where we get to OOCSS. We start defining classes here.
+Objects should be non-cosmetic styling. Things like grids, or wrappers, cards, media.
+
+```sh
+_objects.grid.scss
+_objects.wrapper.scss
+_object.media.scss
+```
+
+---
+
+# Components
+
+This is where you start putting the UI together. Once the project is setup, you'll spend most of the time in these files. 
+Now our classing will get more specific. You shouldn't have any declarations without at least specificty level of 1 class. 
+
+```
+_components.site-nav.scss
+_components.buttons.scss
+_components.carouself.scss
+```
+
+---
+
+# Trumps
+
+You don't want to ever have to be in these files. The declarations in Trumps beat everything else for specificity. If you're using an `!important` it better be in here. I'll throw ID selectors and classes in here if necessary.
+
+```
+_trumps.clearfix.scss
+_trumps.utilities.scss // just for Gray ;)
+_trumps.ie8.scss
+```
+
+---
+
+Takeaways
+---------
+
+Start small. You don't need the kitchen sink.
+A little bit of thinking goes a long way. Think about what your trying to style.
+No one true approach 
+Mix'n match
+
+CSS
+---
+
+classes good / ids bad / attributes neutral?
+- performance tests required
+
+CSS organization is subjective. Do what you want. But think first.
+
+Mix with care - you can mix and match your methodologies - I like the idea of SMACSS prefixes. I like BEM. BEMACSS!
+
+# File/folder structure
+- assets/stylesheets/
+- split up at logical groupings.
+- my common files
+- - variables
+- - typography
+- - mixins
+- - layout/structure
+- - components = block
+- - - site-header
+- - - site-footer
+- - - colophon
+- - - hero-unit
+- - - etc
+
+# Imports
+- we have them, please use them.
+- @import "file_name"; // scss no prefix _ no extension
+
+# Splitting files up
+- File getting large? Move associated blocks/elements out to a new file, and import it.
+
+# Helpers/Utilities
+- greenfield project? Not at the start. Start building, once you see common patterns, refactor.
+- Existing project? Look for existing patterns. Refactor.
+
+# Normalisation 
+*, *:before, *:after {
+/* Zero all the things! */
+}
+
+# Naming
+Sucks. Good luck.
+Following BEM
+Break down elements into their smallest pieces - like atomic.
+
+Palmar (palm side) (anterior) 
+Dorsal (back side)
+
+```
+.hand // block
+.hand--right // modifier
+.hand__finger .finger // block in a block
+.finger // block
+.finger__nail .nail // block in a block
+.nail // block
+.nail__cuticle // element
+.nail__crest // element
+
+.finger .distal-phalanges
+.finger .intermediate-phalanges
+.finger .proximal-phalanges
+```
+
+```
+.hand .hand--right
+.hand__finger .finger .finger--index
+.finger__nail .nail
+.nail__cuticle
+.nail__crest
+```
+
+## Naming Continued
+$color-red - implies color red. Will always be red-ish
+$color-primary - Not a color - but implies it's important
+$color-accent - not a color - but implies it's complimentary to other colors.
+
+### controversy of colors
+$color-white - is white. Not off white, not #eee, just #fff;
+$color-gray - gray covers the gradient from black to white
+$color-gray--darkest - could be black, could be #222 you don't need to care about the value, just that it's the darkest shade on the page
+$color-gray--light - lighter than the median gray
+$color-gray--lightest - opposite of darkest
+
+#Things I've Learned At Stembolt
+
+## How to frustrate Clarke
+
+- use Gnome
+- nmap <C-d> to :bd!
+
+## How to annoy Gray
+
+- helper classes
+- utilities
+- extraneous properties
+- magic numbers!
+- calc(50% - #{$gutter-vertical + $gutter-underline-spacing + 10px})
+- %extends
+- data-uri background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='#ffffff' width='100' height='100' %3E%3Cpath d='M99 50L1 99V1z'/%3E%3C/svg%3E");
+- blank lines
+- override useless properties
+- *, *::before, *::after { box-sizing: border-box; }
+
+
+
+# Refrences
+Nicole Sullivan
+Jonathan Snook
+CSS Wizardry
+Yandex
+Brad Frost
+Chris Coyer / CSS Tricks
+
+
+</textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js">
+</script>
+<script>
+var slideshow = remark.create();
+</script>
+</body>
+</html>
+
+---
+
+# 2016 - Atomic Design
+
+Brad Frost @brad_frost
+
+- classes for everything
+- Atoms, Molecules, Organisms, Templates, Pages
+- Atom: HTML Tag
+- Molecule: Collection of Atoms - eg: Search Form
+- Organism: Grouping of Molecules - eg: Site header (with Search form ;) )
+
+
